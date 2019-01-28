@@ -10,7 +10,7 @@
      http://www.springframework.org/schema/context/spring-context.xsd">
     <description>Message AMQP Configuration</description>
 
-    <context:property-placeholder ignore-unresolvable="true" location="classpath:properties/amqp.properties"/>
+    <context:property-placeholder ignore-unresolvable="true" location="classpath:/properties/amqp.properties2"/>
 
     <rabbit:connection-factory id="connectionFactory" host="${rabbitmq.host}" port="${rabbitmq.post}"/>
     <!--创建一个管理组件，它会自动创建下面声明的queue、exchange、bingding-->
