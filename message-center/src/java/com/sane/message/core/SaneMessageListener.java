@@ -1,10 +1,10 @@
 package com.sane.message.core;
 
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageListener;
+import com.sane.message.core.entity.MessageEntity;
+import com.sane.message.core.event.EventHandler;
 
-public class SaneMessageListener implements MessageListener {
-    public void onMessage(Message var1) {
-        System.out.print(var1.toString());
+public class SaneMessageListener{
+    public void onMessage(MessageEntity messageEntity) {
+        EventHandler.handler(messageEntity.getEvent(), messageEntity.getMessage());
     }
 }

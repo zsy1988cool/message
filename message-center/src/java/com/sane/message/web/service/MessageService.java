@@ -2,25 +2,31 @@ package com.sane.message.web.service;
 
 import com.sane.message.core.entity.MessageEntity;
 import com.sane.message.core.event.Event;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MessageService {
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
     QueueConsumer consumer;
 
     public MessageService() throws Exception{
         try {
-            consumer = new QueueConsumer("queue001");
+            consumer = new QueueConsumer("message.queue.comm", rabbitTemplate);
         } catch (Exception e) {
             e.printStackTrace();
             consumer = null;
         }
-
     }
 
     public QueueConsumer getConsumer() {
+        if(consumer != null && consumer.getRabbitTemplate() == null) {
+            consumer.setRabbitTemplate(rabbitTemplate);
+        }
         return consumer;
     }
 
@@ -29,8 +35,6 @@ public class MessageService {
         messageEntity.setEvent(event);
         messageEntity.setMessage(message);
 
-        Producer producer = new Producer("queue001");
-        producer.sendMessage(messageEntity);
-        producer.close();
+        rabbitTemplate.convertAndSend("queueTestKey", messageEntity);
     }
 }

@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value="test")
 @Controller
 public class MessageController {
-
-    /*private RabbitTemplate rabbitTemplate;
-
+/*
     @Autowired
     public TestController(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
@@ -26,8 +24,6 @@ public class MessageController {
         if(messageService.getConsumer() != null) {
             new Thread(messageService.getConsumer()).start();
         }
-
-
         return "index";
     }
 

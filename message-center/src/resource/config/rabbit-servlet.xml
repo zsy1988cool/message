@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
      http://www.springframework.org/schema/rabbit
-     http://www.springframework.org/schema/rabbit/spring-rabbit-1.2.xsd">
+     http://www.springframework.org/schema/rabbit/spring-rabbit-1.2.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder ignore-unresolvable="true" location="classpath:/properties/amqp.properties"/>
+
     <!--配置connection-factory，指定连接rabbit server参数 -->
     <rabbit:connection-factory id="connectionFactory"
-                               username="guest" password="guest" host="127.0.0.1" port="5672"
-    />
-    <!-- <rabbit:connection-factory id="connectionFactory"
-         username="test2" password="test2"
-        host="123.206.228.200" port="5672" /> -->
+                               username="${rabbitmq.username}" password="${rabbitmq.password}"
+                               host="${rabbitmq.host}" port="${rabbitmq.post}" />
 
     <!--通过指定下面的admin信息，当前producer中的exchange和queue会在rabbitmq服务器上自动生成 -->
     <rabbit:admin id="connectAdmin" connection-factory="connectionFactory" />
 
     <!--定义queue -->
-    <rabbit:queue name="queueTest" durable="true" auto-delete="false"
+    <rabbit:queue name="message.queue.comm" durable="true" auto-delete="false"
                   exclusive="false" declared-by="connectAdmin" />
 
     <!-- 定义direct exchange，绑定queueTest -->
     <rabbit:direct-exchange name="com.exchanged.fanout"
                             durable="true" auto-delete="false" declared-by="connectAdmin">
         <rabbit:bindings>
-            <rabbit:binding queue="queueTest" key="queueTestKey"></rabbit:binding>
+            <rabbit:binding queue="message.queue.comm" key="queueTestKey"></rabbit:binding>
         </rabbit:bindings>
     </rabbit:direct-exchange>
 
@@ -33,11 +34,10 @@
                      exchange="com.exchanged.fanout" />
 
     <!-- 消息接收者 -->
-    <bean id="messageReceiver" class="com.sane.message.core.SaneMessageListener"></bean>
+    <bean id="messageListener" class="com.sane.message.core.SaneMessageListener"></bean>
 
-    <!-- queue litener 观察 监听模式 当有消息到达时会通知监听在对应的队列上的监听对象 -->
-    <rabbit:listener-container
-            connection-factory="connectionFactory">
-        <rabbit:listener queues="queueTest" ref="messageReceiver" />
-    </rabbit:listener-container>
+    <!-- queue litener 观察 监听模式 当有消息到达时会通知监听在对应的队列上的监听对象
+    <rabbit:listener-container  connection-factory="connectionFactory" acknowledge="manual" concurrency= "2">
+        <rabbit:listener queue-names="message.queue.comm" ref="messageListener" method="onMessage" />
+    </rabbit:listener-container> -->
 </beans>
