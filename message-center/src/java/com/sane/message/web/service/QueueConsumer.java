@@ -23,7 +23,7 @@ public class QueueConsumer implements Runnable {
 
     @Override
     public void run() {
-        MessageEntity messageEntity = (MessageEntity)rabbitTemplate.receiveAndConvert(this.queueName, 100000);
+        MessageEntity messageEntity = (MessageEntity)rabbitTemplate.receiveAndConvert(this.queueName, 3000);
         if(messageEntity != null) {
             EventHandler.handler(messageEntity.getEvent(), messageEntity.getMessage());
         }
