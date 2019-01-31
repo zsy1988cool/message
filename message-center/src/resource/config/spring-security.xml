@@ -13,7 +13,7 @@
     http://www.springframework.org/schema/security/spring-security.xsd">
 
     <http auto-config="true">
-        <intercept-url pattern="/**" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/message/**" access="hasRole('ROLE_USER')" />
     </http>
 
     <beans:bean id="messageUserDetailsService" class="com.sane.security.MessageUserDetailsService" />
